@@ -1,0 +1,28 @@
+.olblist_pagenavi {
+  display: block;
+  text-align: center;
+  padding-bottom: 8px;
+}
+
+.olblist_date {
+  padding: 4px 8px;
+  margin: 0px 8px;
+  font-size: 16px;
+  width: auto;
+}
+
+.olblist_date option {
+  padding: 4px;
+}
+
+.olblist_pagenavi input {
+  padding: 4px 8px;
+  margin: 0px 8px;
+  font-size: 16px;
+} 
+
+table.daily_schedule th.olblist_times, table.daily_schedule td.olblist_times {
+ position: sticky;
+ background-color: #def;
+ left: 0;
+}
