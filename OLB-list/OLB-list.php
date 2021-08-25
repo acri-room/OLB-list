@@ -3,7 +3,7 @@
   Plugin Name: OLB Lightweight List
   Plugin URI:
   Description: Lightweight, scrollable schedule list for OLB System
-  Version: 0.9.2
+  Version: 0.9.3
   Author: Naoki FUJIEDA
   Author URI: https://github.com/nfproc/
   License: GPLv2
@@ -47,6 +47,7 @@ class olblist {
     foreach ($roomlist as $room) {
       $rooms[$room->ID] = array();
       $rooms[$room->ID]['name'] = $room->user_nicename;
+      $rooms[$room->ID]['dname'] = $room->display_name;
       $rooms[$room->ID]['desc'] = get_user_meta($room->ID, 'user_address', true);
     }
     asort($rooms);
@@ -126,6 +127,7 @@ EOD;
     $groupname = '';
     foreach ($rooms as $id => $room) {
       $roomname = $room['name'];
+      $dispname = $room['dname'];
       $roomdesc = ($room['desc'] === "") ? "" : ("<br>(" . $room['desc'] . ")");
       if ($groupname != substr($roomname, 0, 3)) {
         $groupcolor = 1 - $groupcolor;
@@ -133,7 +135,7 @@ EOD;
       }
       $color = $groupcolor * 2 + (intval(substr($roomname, -2)) % 2);
       printf('<th style="background-color: %s">', $colors[$color]);
-      printf('<a rel="nofollow" href="%s/vm/%s">%s</a>%s</th>', home_url(), $roomname, $roomname, $roomdesc);
+      printf('<a rel="nofollow" href="%s/vm/%s">%s</a>%s</th>', home_url(), $roomname, $dispname, $roomdesc);
     }
     echo '</tr></thead><tbody>';
     $starttime = strtotime($qdate . ' ' . $settings['starttime']);
