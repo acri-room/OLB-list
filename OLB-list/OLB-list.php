@@ -3,7 +3,7 @@
   Plugin Name: OLB Lightweight List
   Plugin URI:
   Description: Lightweight, scrollable schedule list for OLB System
-  Version: 0.9.3
+  Version: 0.9.4
   Author: Naoki FUJIEDA
   Author URI: https://github.com/nfproc/
   License: GPLv2
@@ -87,10 +87,17 @@ class olblist {
 EOD;
     $day = $today;
     while (true) {
+      $dayweek = date('w', strtotime($day));
+      $dayclass = '';
+      if ($dayweek == 0) {
+        $dayclass = ' class="olblist_date_sun"';
+      } else if ($dayweek == 6) {
+        $dayclass = ' class="olblist_date_sat"';
+      }
       if ($day == $qdate) {
-        printf('<option selected>%s *</option>', $day);
+        printf('<option selected%s>%s *</option>', $dayclass, $day);
       } else {
-        printf('<option>%s</option>', $day);
+        printf('<option%s>%s</option>', $dayclass, $day);
       }
       if ($day == $last) {
         break;

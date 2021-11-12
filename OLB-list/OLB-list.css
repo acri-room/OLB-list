@@ -15,6 +15,14 @@
   padding: 4px;
 }
 
+.olblist_date_sat {
+  background-color: #def;
+}
+
+.olblist_date_sun {
+  background-color: #fed;
+}
+
 .olblist_pagenavi input {
   padding: 4px 8px;
   margin: 0px 8px;
