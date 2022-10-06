@@ -27,7 +27,11 @@
   padding: 4px 8px;
   margin: 0px 8px;
   font-size: 16px;
-} 
+}
+
+.olblist_roomdesc {
+  font-size: 80%;
+}
 
 table.daily_schedule th.olblist_times, table.daily_schedule td.olblist_times {
  position: sticky;

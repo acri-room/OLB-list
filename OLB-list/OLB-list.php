@@ -3,7 +3,7 @@
   Plugin Name: OLB Lightweight List
   Plugin URI:
   Description: Lightweight, scrollable schedule list for OLB System
-  Version: 0.9.4
+  Version: 0.9.5
   Author: Naoki FUJIEDA
   Author URI: https://github.com/nfproc/
   License: GPLv2
@@ -27,6 +27,17 @@ class olblist {
       }
     }
     return $qdate;
+  }
+
+  private static function getQueryServers () {
+    $qserv = '*';
+    if (isset($_SERVER['QUERY_STRING'])) {
+      parse_str($_SERVER['QUERY_STRING'], $qs);
+      if (isset($qs['servers'])) {
+        $qserv = $qs['servers'];
+      }
+    }
+    return $qserv;
   }
 
   private static function getOLBSettings () {
@@ -76,7 +87,7 @@ class olblist {
     return $schedule;
   }
 
-  private static function showPageNavi ($qdate) {
+  private static function showPageNavi ($qdate, $qserv, $rooms) {
     $today = date('Y-m-d', current_time('timestamp'));
     $last  = date('Y-m-d', strtotime('last day of next month', current_time('timestamp')));
     ob_start();
@@ -109,8 +120,24 @@ EOD;
 </select>
 <input type="button" value="翌日>" onclick="olblistNextDate();">
 <input type="button" value="移動" onclick="olblistTransit();">
-</div>
+<select id="olblist_server" class="olblist_date" onchange="olblistDispColumns(this.value)">
+<option value="*">サーバ: 全て表示</option>
 EOD;
+    $groupname = '';
+    foreach ($rooms as $id => $room) {
+      $roomname_head = substr($room['name'], 0, 3);
+      $dispname_head = substr($room['dname'], 0, 3);
+      if ($groupname != $roomname_head) {
+        $groupname = $roomname_head;
+        if ($groupname == $qserv) {
+          echo('<option selected');
+        } else {
+          echo('<option');
+        }
+        printf(' value="%s">サーバ: %s* のみ表示</option>', $groupname, $dispname_head);
+      }
+    }
+    printf('</select></div>');
     $html = ob_get_contents();
     ob_end_clean();
     return $html;
@@ -129,13 +156,18 @@ EOD;
     ob_start();
     echo '<div style="overflow-x: scroll">';
     printf('<table id="daily_schedule" class="daily_schedule" style="table-layout: fixed; min-width: %dpx">', $width);
+    echo '<colgroup id="olblist_cols"><col id="olblist_col_head">';
+    foreach ($rooms as $id => $room) {
+      printf('<col id="olblist_col_%s">', $room['name']);
+    }
+    echo '</colgroup>';
     echo '<thead><tr class="head"><th class="olblist_times">サーバ</th>';
     $groupcolor = 0;
     $groupname = '';
     foreach ($rooms as $id => $room) {
       $roomname = $room['name'];
       $dispname = $room['dname'];
-      $roomdesc = ($room['desc'] === "") ? "" : ("<br>(" . $room['desc'] . ")");
+      $roomdesc = ($room['desc'] === "") ? "" : ('<br><span class="olblist_roomdesc">(' . $room['desc'] . ")</span>");
       if ($groupname != substr($roomname, 0, 3)) {
         $groupcolor = 1 - $groupcolor;
         $groupname = substr($roomname, 0, 3);
@@ -183,12 +215,13 @@ EOD;
 
   public static function showDaily () {
     $qdate = self::getQueryDate();
+    $qserv = self::getQueryServers();
     $settings = self::getOLBSettings();
     $rooms = self::getOLBRooms();
     $schedule = self::getOLBSchedule($qdate);
 
     ob_start();
-    echo self::showPageNavi($qdate);
+    echo self::showPageNavi($qdate, $qserv, $rooms);
     echo self::showScheduleTable($qdate, $settings, $rooms, $schedule);
     $html = ob_get_contents();
     ob_end_clean();
